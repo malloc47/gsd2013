@@ -1,0 +1,405 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+
+    <title>malloc47/Interactive Grain Image Segmentation using Graph Cut Algorithms</title>
+    <meta name="description" content="Presentation for SPIE 2013">
+    <meta name="author" content="Jarrell Waggoner">
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <link rel="stylesheet" href="reveal/css/reveal.min.css">
+    <link rel="stylesheet" href="reveal/css/theme/beige.css" id="theme">
+    <!-- For syntax highlighting -->
+    <link rel="stylesheet" href="reveal/lib/css/zenburn.css">
+
+    <!-- If the query includes 'print-pdf', use the PDF print sheet -->
+    <script>
+      document.write( '<link rel="stylesheet" href="reveal/css/print/' + ( window.location.search.match( /print-pdf/gi ) ? 'pdf' : 'paper' ) + '.css" type="text/css" media="print">' );
+    </script>
+    <script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+	extensions: ["tex2jax.js"],
+	jax: ["input/TeX","output/SVG"],
+        //TeX: { equationNumbers: { autoNumber: "AMS" } },
+	tex2jax: {inlineMath: [["$","$"],["\\(","\\)"]]}
+    });
+    </script>
+    <script type="text/javascript" src="mathjax/MathJax.js"></script>
+    <script type="text/javascript" src="jquery-1.9.0.min.js"></script>
+    <!-- <script type="text/javascript" src="jquery.coords.js"></script> -->
+    <style type="text/css">
+    </style>
+    <!--[if lt IE 9]>
+	<script src="lib/js/html5shiv.js"></script>
+	<![endif]-->
+  </head>
+
+  <body>
+
+    <div class="reveal">
+
+      <!-- Any section element inside of this container is displayed as a slide -->
+      <div class="slides">
+
+	<section>
+	  <h1>Interactive Grain <br /> Image Segmentation</h1>
+	  <h3>using Graph Cut Algorithms</h3>
+	  <p>
+	    <small><a href="http://www.malloc47.com">Jarrell Waggoner</a>$^1$ / <a href="http://twitter.com/malloc47">@malloc47</a> / <a href="mailto:waggonej@email.sc.edu">waggonej@email.sc.edu</a>,</small><br />
+	    <small><a href="mailto:zhou42@email.sc.edu">Youjie Zhou</a>$^1$,</small>
+	    <small><a href="mailto:Jeff.Simmons@wpafb.af.mil">Jeff Simmons</a>$^2$,</small>
+	    <small><a href="mailto:ayman.salem@icmrl.net">Ayman Salem</a>$^3$,</small>
+	    <small><a href="mailto:degraef@cmu.edu">Marc De Graef</a>$^4$,</small>
+	    <small><a href="mailto:songwang@cec.sc.edu">Song Wang</a>$^1$</small>
+	  </p><br />
+	  <p><small>$^1$USC, $^2$AFOSR, $^3$<a href="http://www.materialsresources.com/index-2.html">MRi</a>, $^4$CMU</small></p>
+	</section>
+
+        <section>
+	  <h3>Interactive Segmentation?</h3>
+          <ul>
+            <li>Contrast with fully-automatic segmentation</li>
+            <li>Sparse number of user interactions as additional
+            constraints or guidance in the segmentation process</li>
+            <li>Other interactive segmentation methods use:
+              <ul>
+                <li>Bounding boxes</li>
+                <li>Coarse outlining of the desired boundary</li>
+                <li>"Scribbling" foreground/background regions</li>
+              </ul>
+            </li>
+          </ul>
+	</section>
+
+        <section>
+	  <h3>Our Approach</h3>
+          <ul>
+            <li>Build on our previous <strong>propagation</strong>
+            method</li>
+            <li>Correct errors after every propagation with
+            a <strong>single point</strong> (click) as the
+            user-supplied interaction</li>
+            <li>Reduce having to draw individual boundaries</li>
+            <!-- <li>Reduce manual labor as much as possible (few clicks) -->
+            <!-- while improving quality of the segmentation</li> -->
+          </ul>
+	</section>
+
+	<section>
+	  <img src="fig/dd.png" alt="Propagation" style="border:none; box-shadow:none;">
+	  <table>
+            <tr> <td>$U$</td><td>: Source image that is segmented</td> </tr>
+	    <tr> <td>$V$</td> <td>: Target image that is not segmented</td> </tr>
+	    <tr> <td>$S^U, S^V$</td> <td>: Segmentation of $U$ or $V$ respectivesly</td> </tr>
+	  </table>
+	</section>
+
+	<!-- <section> -->
+	<!--   <h3>Notation</h3> -->
+	<!--   <table> -->
+	<!--     <tr> <td>$U$</td><td>: Source image that is segmented</td> </tr> -->
+	<!--     <tr> <td>$V$</td> <td>: Target image that is not segmented</td> </tr> -->
+	<!--     <tr> <td>$S^U, S^V$</td> <td>: Segmentation of $U$ or $V$ respectivesly</td> </tr> -->
+	<!--   </table><br /> -->
+	<!--   <p>A segmentation $S^U$ is a <em>partition</em> of the pixels in $U$:<br /><br /> -->
+	<!--     \[S^U = \{ S^U_1, S^U_2, \ldots, S^U_n \}  \] -->
+	<!--   \[ U = \bigcup_{i=1}^{n} S^U_i \] </p> -->
+	<!-- </section> -->
+
+	<section>
+	  <h3>Propagation</h3>
+
+	  <ul>
+            <li>Obtain $S^V$ by propagating
+	  $S^U$ to $V$</li>
+
+	  <li><p style="text-align: left;">In our previous work, this was
+	  done by using an energy of the form<br /><br />
+	  \begin{equation}
+	  E( S^V ) = \sum_{p\in V}\Theta_p(S^V_i) + 
+	  \sum_{\{p,q\}\in\mathcal{P}^V_n} \Phi_{pq}(S_i^V , S_j^V)
+	  \end{equation}</p>
+          <p style="text-align: left;">which can be minimized by the
+          min-cut max-flow graph cut algorithm</p></li>
+          </ul>
+	</section>
+
+	<section>
+	  <h3>Unary and Binary Terms</h3>
+	  <br />
+	  <p>
+          \begin{equation}
+            \Theta_p(S^{V}_i) = \left\{
+            \begin{array}{lcr}
+              0, &  \textrm{distance}(p,S^U_i) < d  \\
+              \infty, & \textrm{ otherwise} \\
+            \end{array}
+            \right.
+          \end{equation}
+          </p>
+	  <br />
+	  <p>
+          \begin{equation} \Phi_{pq}(S^V_i , S^V_j) = \left\{
+            \begin{array}{lcr}
+              0, & i = j \\
+              \infty, & \{ S^U_i, S^U_j \} \notin \mathcal{A}^U  \\
+              g( p, q ), & \{ S^U_i, S^U_j \} \in \mathcal{A}^U \\
+            \end{array}
+            \right. ,
+          \end{equation}
+          </p>
+	</section>
+
+	<!-- <section data-state="playvideo"> -->
+        <!--   <video id="alpha-beta" height="300" src="fig/alpha-beta.webm" autobuffer> -->
+	<!--     <img src="fig/dd.png" alt="Propagation" style="border:none; box-shadow:none;"> -->
+        <!--   </video> -->
+	<!-- </section> -->
+
+	<section>
+	  <h3>Limitations</h3>
+	  <ul>
+	    <li>Minimizes a fixed set of segments: must use heuristics
+	    to determine where to add new segments</li>
+	    <li>Topology constraints may not allow the removal of some
+	    segments</li>
+	  </ul>
+	</section>
+
+	<section>
+	  <h1>Goal:</h1>
+	  <p style="text-align: left;">Incorporate human interaction
+	  into the segmentation task to</p>
+	  <ul>
+	    <li style="padding-bottom:1em;">Remove Spurious Segments</li>
+	    <li style="padding-bottom:1em;">Add Missing Segments</li>
+	  </ul>
+	  <p style="text-align: left;">Do this with minimal
+	  interaction, producing an updated segmentation
+	  $\tilde{S}^V_i$</p>
+	</section>
+
+	<section>
+	  <h1>Removal</h1>
+	</section>
+
+	<section>
+	  <img src="fig/p-aaa.png" height="260" style="border:none; box-shadow:none;">
+	  <img src="fig/aad.png" height="260" style="border:none; box-shadow:none;">
+	  <img src="fig/aac.png" height="260" style="border:none; box-shadow:none;">
+	</section>
+
+	<section>
+	  <section>
+	    <h3>Removal Input</h3>
+	    <p style="text-align: left;">We require only a single
+	      annotation (click) identifying a particular segment
+	      $S^V_k$ to be removed, which is done in two steps:</p>
+	  </section>
+
+	  <section>
+	    <h3>Identify Local Region</h3>
+	    <p>Identify local region for
+	    removal $\mathcal{L} = \{\mathcal{A}^V\}_k \bigcup S^V_k$
+	    where $\{\mathcal{A}^V\}_k$ is all the segments adjacent
+	    to the segment to be removed</p>
+	  </section>
+
+	  <section>
+	    <h3>Update Energy Terms</h3>
+	    <p style="text-align: left;">Update the unary term to allow $S^V_k$ to be
+	    reassigned to its neighbors:<br />
+	      \begin{equation}
+                \begin{aligned}
+                  \forall p \in S^V_k ,& \quad \Theta_p(\tilde{S}^V_i) = \left\{
+                  \begin{array}{lcr}
+                    0, & S^V_i \in \{\mathcal{A}^V\}_k  \\
+                    \infty, & \textrm{ otherwise} \\
+                  \end{array}
+                  \right. \\
+                  \forall p \notin S^V_k ,& \quad \Theta_p(\tilde{S}^V_i) = \Theta_p(S^V_i)
+                \end{aligned}
+              \end{equation}</p>
+	  </section>
+	</section>
+
+	<section>
+	  <h3>Removal Algorithm</h3>
+	  <img src="fig/alg1.png" style="border:none;">
+	</section>
+
+	<section>
+	  <h3>Removal: Live Demo</h3>
+          <img id="remu" height="250" src="http://127.0.0.1:8000/raw/?dataset=c3&slice=1" style="border:none;">
+          <img id="remv" height="250" src="http://127.0.0.1:8000/raw/?dataset=c3&slice=3" style="border:none;">
+	</section>
+
+	<section>
+	  <h1>Addition</h1>
+	</section>
+
+	<section>
+	  <img src="fig/bba.png" height="260" style="border:none; box-shadow:none;">
+	  <img src="fig/p-bbb.png" height="260" style="border:none; box-shadow:none;">
+	  <img src="fig/bbd.png" height="260" style="border:none; box-shadow:none;">
+	</section>
+
+	<section>
+	  <section>
+	    <h3>Addition Input</h3>
+	    <p style="text-align: left;">Require three inputs:</p>
+	    <ul>
+	      <li><strong>Center</strong> point $c$ for new
+	      segment</li>
+	      <li><strong>Seed</strong> radius $s$ around the center
+	        point which is completely contained within the desired
+	        grain</li>
+	      <li><strong>Dilation</strong> radius $d$ around the
+	        center point which completely covers the desired
+	        grain</li>
+	    </ul>
+	  </section>
+	  <section>
+	    <h3>Local Region</h3> 
+            <p style="text-align: left;">$\mathcal{L} \gets$ union of all segments that contain
+            a seed pixel or dilation pixel</p>
+	  </section>
+	  <section>
+	    <h3>Update Energy Terms</h3> 
+            <p>\begin{equation}
+              \Theta_p(\tilde{S}^V_{n+1}) = \left\{
+                \begin{array}{lcr}
+                  0, & \| p - c \| \leq d  \\
+                  \infty, & \textrm{ otherwise} \\
+                \end{array}
+              \right.
+            \end{equation}
+            \begin{equation}
+              \Theta_p(\tilde{S}^V_i) = \left\{
+                \begin{array}{lcr}
+                  \infty, & \| p - c \| \leq s \textrm{ and } i \neq n+1  \\
+                  \Theta_p(S^{V}_i), & \textrm{ otherwise.} \\
+                \end{array}
+              \right.
+            \end{equation}</p>
+	  </section>
+	</section>
+
+	<section>
+	  <h3>Addition Algorithm</h3>
+	  <img src="fig/alg2.png" style="border:none;">
+	</section>
+
+	<section>
+	  <h3>Addition: Live Demo</h3>
+          <img id="addu" height="300" src="http://127.0.0.1:8000/raw/?dataset=c3&slice=1" style="border:none;">
+          <img id="addv" height="300" src="http://127.0.0.1:8000/raw/?dataset=c3&slice=3" style="border:none;">
+	</section>
+
+	<section>
+	  <h1>Parameter <br />Estimation</h1>
+	</section>
+
+	<section>
+	  <h3>Parameter Estimation</h3>
+          <ul>
+            <li>Estimate the $s$ and $d$ parameters in
+            the <strong>addition</strong> step</li>
+            <li>Do this by leveraging information about the center $c$
+            the user provided relative to the initial segment in which
+            it resides:
+              <ul>
+                <li>Increase $s$ by $\epsilon$ until it touches the
+                boundary of its containing segment $S^V_b$</li>
+                <li>Set $d$ to be $2\times s$</li>
+              </ul>
+            </li>
+          </ul>
+	</section>
+
+	<section>
+	  <h3>Parameter Estimation Visual Example</h3>
+          <img src="fig/p-cca.png" height="260" style="border:none; box-shadow:none;">
+	  <img src="fig/p-ccf.png" height="260" style="border:none; box-shadow:none;">
+          <br />
+	  <img src="fig/p-ccg.png" height="260" style="border:none; box-shadow:none;">
+	  <img src="fig/p-ccb.png" height="260" style="border:none; box-shadow:none;">
+	</section>
+
+	<section>
+	  <h1>Experiments</h1>
+	</section>
+
+        <section>
+	  <h3>Performance</h3>
+          <img src="fig/eval_f.png" height="500" style="border:none;">
+	</section>
+
+        <section>
+	  <h3>Effort</h3>
+          <img src="fig/eval.png" height="500" style="border:none;">
+	</section>
+
+        <section>
+	  <h3>Time</h3>
+          <img src="fig/eval_time.png" height="500" style="border:none;">
+	</section>
+
+        <section>
+	  <h3>Qualitative Results</h3>
+          <img src="fig/qual/a1.png" width="125" style="border:none;">
+          <img src="fig/qual/a2.png" width="125" style="border:none;">
+          <img src="fig/qual/a3.png" width="125" style="border:none;">
+
+          <img src="fig/qual/d1.png" width="125" style="border:none;">
+          <img src="fig/qual/d2.png" width="125" style="border:none;">
+          <img src="fig/qual/d3.png" width="125" style="border:none;">
+
+          <br />
+
+          <img src="fig/qual/f1.png" width="125" style="border:none;">
+          <img src="fig/qual/f2.png" width="125" style="border:none;">
+          <img src="fig/qual/f3.png" width="125" style="border:none;">
+
+          <img src="fig/qual/j1.png" width="125" style="border:none;">
+          <img src="fig/qual/j2.png" width="125" style="border:none;">
+          <img src="fig/qual/j3.png" width="125" style="border:none;">
+	</section>
+
+        <section>
+	  <h1>Conclusion</h1>
+	</section>
+
+        <section>
+          <ul>
+            <li style="padding-bottom:1em;">Augmented our previous
+            propagation approach with an <strong>interactive</strong>
+            component that increases performance</li>
+            <li style="padding-bottom:1em;">We handle both
+            segmentation <strong>addition</strong>
+            and <strong>removal</strong> using minimal
+            interaction</li>
+            <li style="padding-bottom:1em;"><strong>Parameter
+            estimation</strong> reduces the time and effort
+            needed</li>
+          </ul>
+	</section>
+
+        <section>
+	  <h1>Questions?</h1>
+          <br />
+          <br />
+          <p><small><a href="http://www.malloc47.com/spie2013/">http://www.malloc47.com/spie2013/</a></small></p>
+	</section>
+
+      </div>
+    </div>
+
+    <script src="reveal/lib/js/head.min.js"></script>
+    <script src="reveal/js/reveal.min.js"></script>
+    <script type="text/javascript" src="workspace-embed.js"></script>
+    <script type="text/javascript" src="setup.js"></script>
+
+  </body>
+</html>
