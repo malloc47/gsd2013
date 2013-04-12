@@ -29,6 +29,13 @@
     <script type="text/javascript" src="jquery-1.9.0.min.js"></script>
     <!-- <script type="text/javascript" src="jquery.coords.js"></script> -->
     <style type="text/css">
+      .slice .reveal .state-background {
+//      background: url(fig/slice.png) no-repeat center center fixed; 
+      background: url(fig/slice.png);
+      }
+      .slice-seg .reveal .state-background {
+      background: url(fig/slice-seg.png);
+      }
     </style>
     <!--[if lt IE 9]>
 	<script src="lib/js/html5shiv.js"></script>
@@ -56,12 +63,43 @@
 	  <p><small>$^1$USC, $^2$AFOSR, $^3$<a href="http://www.materialsresources.com/index-2.html">MRi</a>, $^4$CMU</small></p>
 	</section>
 
-        <section>
+	<section>
+	  <h1>Computer Science <br /> + <br /> Materials Science</h1>
+	</section>
+
+    <section>
+	  <h2>Materials Science</h2>
+      <p style="text-align:left">Rapid analysis of materials will help</p>
+      <ul>
+        <li>Develop faster, safer vehicles</li>
+        <li>Make lighter computers, phones, and batteries</li>
+        <!-- <li>Make cheaper, more efficient technology</li> -->
+        <li>Find new sources of power</li>
+        <li>Stronger buildings and other structures</li>
+        <li>Create new human tissue repair mechanisms</li>
+        <li>Expedite R&amp;D for new materials</li>
+      </ul>
+	</section>
+
+	<section data-transition="fade">
+      <img src="fig/vol-ex.png" alt="Volume" style="border:none; box-shadow:none;" />
+	</section>
+
+	<section data-transition="fade">
+      <img src="fig/slice-ex.png" alt="Slices" style="border:none; box-shadow:none;" />
+	</section>
+
+	<section data-transition="fade" data-state="slice">
+	</section>
+
+	<section data-transition="fade" data-state="slice-seg">
+	</section>
+
+    <section>
 	  <h3>Interactive Segmentation?</h3>
           <ul>
-            <li>Contrast with fully-automatic segmentation</li>
-            <li>Sparse number of user interactions as additional
-            constraints or guidance in the segmentation process</li>
+            <li>Small number of user interactions as additional
+            guidance in the segmentation process</li>
             <li>Other interactive segmentation methods use:
               <ul>
                 <li>Bounding boxes</li>
@@ -72,99 +110,23 @@
           </ul>
 	</section>
 
-        <section>
+    <section>
 	  <h3>Our Approach</h3>
-          <ul>
-            <li>Build on our previous <strong>propagation</strong>
-            method</li>
-            <li>Correct errors after every propagation with
-            a <strong>single point</strong> (click) as the
-            user-supplied interaction</li>
-            <li>Reduce having to draw individual boundaries</li>
-            <!-- <li>Reduce manual labor as much as possible (few clicks) -->
-            <!-- while improving quality of the segmentation</li> -->
-          </ul>
+      <ol>
+        <li>Start from an automatic segmentation</li>
+        <li>Allow user interaction to correct errors</li>
+      </ol>
 	</section>
 
-	<section>
-	  <img src="fig/dd.png" alt="Propagation" style="border:none; box-shadow:none;">
-	  <table>
-            <tr> <td>$U$</td><td>: Source image that is segmented</td> </tr>
-	    <tr> <td>$V$</td> <td>: Target image that is not segmented</td> </tr>
-	    <tr> <td>$S^U, S^V$</td> <td>: Segmentation of $U$ or $V$ respectivesly</td> </tr>
-	  </table>
-	</section>
+    <section>
+	  <h3>Automatic Segmentation Errors</h3>
+	  <img width="150px" src="fig/d1.png" alt="Segmentation Error" style="border:none; box-shadow:none;">
+	  <img  width="150px" src="fig/d3.png" alt="Segmentation Error" style="border:none; box-shadow:none;">
 
-	<!-- <section> -->
-	<!--   <h3>Notation</h3> -->
-	<!--   <table> -->
-	<!--     <tr> <td>$U$</td><td>: Source image that is segmented</td> </tr> -->
-	<!--     <tr> <td>$V$</td> <td>: Target image that is not segmented</td> </tr> -->
-	<!--     <tr> <td>$S^U, S^V$</td> <td>: Segmentation of $U$ or $V$ respectivesly</td> </tr> -->
-	<!--   </table><br /> -->
-	<!--   <p>A segmentation $S^U$ is a <em>partition</em> of the pixels in $U$:<br /><br /> -->
-	<!--     \[S^U = \{ S^U_1, S^U_2, \ldots, S^U_n \}  \] -->
-	<!--   \[ U = \bigcup_{i=1}^{n} S^U_i \] </p> -->
-	<!-- </section> -->
+      <br />
 
-	<section>
-	  <h3>Propagation</h3>
-
-	  <ul>
-            <li>Obtain $S^V$ by propagating
-	  $S^U$ to $V$</li>
-
-	  <li><p style="text-align: left;">In our previous work, this was
-	  done by using an energy of the form<br /><br />
-	  \begin{equation}
-	  E( S^V ) = \sum_{p\in V}\Theta_p(S^V_i) + 
-	  \sum_{\{p,q\}\in\mathcal{P}^V_n} \Phi_{pq}(S_i^V , S_j^V)
-	  \end{equation}</p>
-          <p style="text-align: left;">which can be minimized by the
-          min-cut max-flow graph cut algorithm</p></li>
-          </ul>
-	</section>
-
-	<section>
-	  <h3>Unary and Binary Terms</h3>
-	  <br />
-	  <p>
-          \begin{equation}
-            \Theta_p(S^{V}_i) = \left\{
-            \begin{array}{lcr}
-              0, &  \textrm{distance}(p,S^U_i) < d  \\
-              \infty, & \textrm{ otherwise} \\
-            \end{array}
-            \right.
-          \end{equation}
-          </p>
-	  <br />
-	  <p>
-          \begin{equation} \Phi_{pq}(S^V_i , S^V_j) = \left\{
-            \begin{array}{lcr}
-              0, & i = j \\
-              \infty, & \{ S^U_i, S^U_j \} \notin \mathcal{A}^U  \\
-              g( p, q ), & \{ S^U_i, S^U_j \} \in \mathcal{A}^U \\
-            \end{array}
-            \right. ,
-          \end{equation}
-          </p>
-	</section>
-
-	<!-- <section data-state="playvideo"> -->
-        <!--   <video id="alpha-beta" height="300" src="fig/alpha-beta.webm" autobuffer> -->
-	<!--     <img src="fig/dd.png" alt="Propagation" style="border:none; box-shadow:none;"> -->
-        <!--   </video> -->
-	<!-- </section> -->
-
-	<section>
-	  <h3>Limitations</h3>
-	  <ul>
-	    <li>Minimizes a fixed set of segments: must use heuristics
-	    to determine where to add new segments</li>
-	    <li>Topology constraints may not allow the removal of some
-	    segments</li>
-	  </ul>
+	  <img width="150px" src="fig/f1.png" alt="Segmentation Error" style="border:none; box-shadow:none;">
+	  <img width="150px" src="fig/f3.png" alt="Segmentation Error" style="border:none; box-shadow:none;">
 	</section>
 
 	<section>
@@ -175,40 +137,56 @@
 	    <li style="padding-bottom:1em;">Remove Spurious Segments</li>
 	    <li style="padding-bottom:1em;">Add Missing Segments</li>
 	  </ul>
-	  <p style="text-align: left;">Do this with minimal
-	  interaction, producing an updated segmentation
-	  $\tilde{S}^V_i$</p>
+	  <p style="text-align: left;">with minimal interaction</p>
 	</section>
 
 	<section>
-	  <h1>Removal</h1>
+	  <h3>Automatic Segmentation</h3>
+
+	  <p style="text-align: left;">In our previous work, the automatic
+	  segmentation was done by using an energy of the form<br /><br />
+	  \begin{equation} E( S^V ) = \sum_{p\in V}\Theta_p(S^V_i) +
+	  \sum_{\{p,q\}\in\mathcal{P}^V_n} \Phi_{pq}(S_i^V , S_j^V)
+	  \end{equation}</p>
+      <p style="text-align: left;">where</p>
+      <ul>
+        <li>$\Theta$ : controls where each segment can go</li>
+        <li>$\Phi$ : controls which segments may be neighbors</li>
+      </ul>
 	</section>
 
-	<section>
-	  <img src="fig/p-aaa.png" height="260" style="border:none; box-shadow:none;">
-	  <img src="fig/aad.png" height="260" style="border:none; box-shadow:none;">
-	  <img src="fig/aac.png" height="260" style="border:none; box-shadow:none;">
-	</section>
+	<!-- <section data-state="playvideo"> -->
+    <!--       <video id="alpha-beta" height="300" src="fig/alpha-beta.webm" autobuffer> -->
+	<!--     <img src="fig/dd.png" alt="Propagation" style="border:none; box-shadow:none;"> -->
+    <!--       </video> -->
+	<!-- </section> -->
 
 	<section>
+
+	  <section>
+	    <h1>Removal</h1>
+	  </section>
+
 	  <section>
 	    <h3>Removal Input</h3>
 	    <p style="text-align: left;">We require only a single
 	      annotation (click) identifying a particular segment
-	      $S^V_k$ to be removed, which is done in two steps:</p>
+	      $S^V_k$ to be removed</p>
+	    <img src="fig/p-aaa.png" height="260" style="border:none; box-shadow:none;">
+	    <img src="fig/aac.png" height="260" style="border:none; box-shadow:none;">
 	  </section>
 
-	  <section>
-	    <h3>Identify Local Region</h3>
-	    <p>Identify local region for
-	    removal $\mathcal{L} = \{\mathcal{A}^V\}_k \bigcup S^V_k$
-	    where $\{\mathcal{A}^V\}_k$ is all the segments adjacent
-	    to the segment to be removed</p>
-	  </section>
+	  <!-- <section> -->
+	  <!--   <h3>Identify Local Region</h3> -->
+	  <!--   <p>Identify local region for -->
+	  <!--   removal $\mathcal{L} = \{\mathcal{A}^V\}_k \bigcup S^V_k$ -->
+	  <!--   where $\{\mathcal{A}^V\}_k$ is all the segments adjacent -->
+	  <!--   to the segment to be removed</p> -->
+	  <!-- </section> -->
 
 	  <section>
-	    <h3>Update Energy Terms</h3>
-	    <p style="text-align: left;">Update the unary term to allow $S^V_k$ to be
+	    <h3>Update Energy Term</h3>
+	    <p style="text-align: left;">Update the $\Theta$ term to allow $S^V_k$ to be
 	    reassigned to its neighbors:<br />
 	      \begin{equation}
                 \begin{aligned}
@@ -217,35 +195,36 @@
                     0, & S^V_i \in \{\mathcal{A}^V\}_k  \\
                     \infty, & \textrm{ otherwise} \\
                   \end{array}
-                  \right. \\
-                  \forall p \notin S^V_k ,& \quad \Theta_p(\tilde{S}^V_i) = \Theta_p(S^V_i)
+                  \right.\\
                 \end{aligned}
               \end{equation}</p>
 	  </section>
+
+	  <!-- <section> -->
+	  <!--   <h3>Removal Algorithm</h3> -->
+	  <!--   <img src="fig/alg1.png" style="border:none;"> -->
+	  <!-- </section> -->
+
+	  <section>
+	    <h3>Removal: Live Demo</h3>
+        <img id="remu" height="250" src="http://127.0.0.1:8000/raw/?dataset=c3&slice=1" style="border:none;">
+        <img id="remv" height="250" src="http://127.0.0.1:8000/raw/?dataset=c3&slice=3" style="border:none;">
+	  </section>
+
 	</section>
 
 	<section>
-	  <h3>Removal Algorithm</h3>
-	  <img src="fig/alg1.png" style="border:none;">
-	</section>
 
-	<section>
-	  <h3>Removal: Live Demo</h3>
-          <img id="remu" height="250" src="http://127.0.0.1:8000/raw/?dataset=c3&slice=1" style="border:none;">
-          <img id="remv" height="250" src="http://127.0.0.1:8000/raw/?dataset=c3&slice=3" style="border:none;">
-	</section>
+	  <section>
+	    <h1>Addition</h1>
+	  </section>
 
-	<section>
-	  <h1>Addition</h1>
-	</section>
+	  <section>
+	    <img src="fig/bba.png" height="260" style="border:none; box-shadow:none;">
+	    <img src="fig/p-bbb.png" height="260" style="border:none; box-shadow:none;">
+	    <img src="fig/bbd.png" height="260" style="border:none; box-shadow:none;">
+	  </section>
 
-	<section>
-	  <img src="fig/bba.png" height="260" style="border:none; box-shadow:none;">
-	  <img src="fig/p-bbb.png" height="260" style="border:none; box-shadow:none;">
-	  <img src="fig/bbd.png" height="260" style="border:none; box-shadow:none;">
-	</section>
-
-	<section>
 	  <section>
 	    <h3>Addition Input</h3>
 	    <p style="text-align: left;">Require three inputs:</p>
@@ -260,11 +239,7 @@
 	        grain</li>
 	    </ul>
 	  </section>
-	  <section>
-	    <h3>Local Region</h3> 
-            <p style="text-align: left;">$\mathcal{L} \gets$ union of all segments that contain
-            a seed pixel or dilation pixel</p>
-	  </section>
+
 	  <section>
 	    <h3>Update Energy Terms</h3> 
             <p>\begin{equation}
@@ -284,47 +259,27 @@
               \right.
             \end{equation}</p>
 	  </section>
-	</section>
 
-	<section>
-	  <h3>Addition Algorithm</h3>
-	  <img src="fig/alg2.png" style="border:none;">
-	</section>
+	  <section>
+	    <h3>Parameter Estimation Visual Example</h3>
+        <img src="fig/p-cca.png" height="260" style="border:none; box-shadow:none;">
+	    <img src="fig/p-ccf.png" height="260" style="border:none; box-shadow:none;">
+        <br />
+	    <img src="fig/p-ccg.png" height="260" style="border:none; box-shadow:none;">
+	    <img src="fig/p-ccb.png" height="260" style="border:none; box-shadow:none;">
+	  </section>
 
-	<section>
-	  <h3>Addition: Live Demo</h3>
-          <img id="addu" height="300" src="http://127.0.0.1:8000/raw/?dataset=c3&slice=1" style="border:none;">
-          <img id="addv" height="300" src="http://127.0.0.1:8000/raw/?dataset=c3&slice=3" style="border:none;">
-	</section>
+	  <!-- <section> -->
+	  <!--   <h3>Addition Algorithm</h3> -->
+	  <!--   <img src="fig/alg2.png" style="border:none;"> -->
+	  <!-- </section> -->
 
-	<section>
-	  <h1>Parameter <br />Estimation</h1>
-	</section>
+	  <section>
+	    <h3>Addition: Live Demo</h3>
+        <img id="addu" height="300" src="http://127.0.0.1:8000/raw/?dataset=c3&slice=1" style="border:none;">
+        <img id="addv" height="300" src="http://127.0.0.1:8000/raw/?dataset=c3&slice=3" style="border:none;">
+	  </section>
 
-	<section>
-	  <h3>Parameter Estimation</h3>
-          <ul>
-            <li>Estimate the $s$ and $d$ parameters in
-            the <strong>addition</strong> step</li>
-            <li>Do this by leveraging information about the center $c$
-            the user provided relative to the initial segment in which
-            it resides:
-              <ul>
-                <li>Increase $s$ by $\epsilon$ until it touches the
-                boundary of its containing segment $S^V_b$</li>
-                <li>Set $d$ to be $2\times s$</li>
-              </ul>
-            </li>
-          </ul>
-	</section>
-
-	<section>
-	  <h3>Parameter Estimation Visual Example</h3>
-          <img src="fig/p-cca.png" height="260" style="border:none; box-shadow:none;">
-	  <img src="fig/p-ccf.png" height="260" style="border:none; box-shadow:none;">
-          <br />
-	  <img src="fig/p-ccg.png" height="260" style="border:none; box-shadow:none;">
-	  <img src="fig/p-ccb.png" height="260" style="border:none; box-shadow:none;">
 	</section>
 
 	<section>
@@ -376,13 +331,13 @@
             <li style="padding-bottom:1em;">Augmented our previous
             propagation approach with an <strong>interactive</strong>
             component that increases performance</li>
-            <li style="padding-bottom:1em;">We handle both
+            <li style="padding-bottom:1em;">Handle both
             segmentation <strong>addition</strong>
             and <strong>removal</strong> using minimal
             interaction</li>
-            <li style="padding-bottom:1em;"><strong>Parameter
-            estimation</strong> reduces the time and effort
-            needed</li>
+            <li>Show that this improves the <strong>quality</strong>
+            of the segmentation, and is <strong>faster</strong> than
+            other methods </li>
           </ul>
 	</section>
 
