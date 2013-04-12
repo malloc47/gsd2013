@@ -96,37 +96,41 @@
 	</section>
 
     <section>
-	  <h3>Interactive Segmentation?</h3>
+	  <h3>Interactive Segmentation</h3>
           <ul>
-            <li>Small number of user interactions as additional
-            guidance in the segmentation process</li>
-            <li>Other interactive segmentation methods use:
-              <ul>
-                <li>Bounding boxes</li>
-                <li>Coarse outlining of the desired boundary</li>
-                <li>"Scribbling" foreground/background regions</li>
-              </ul>
-            </li>
+            <li style="padding-bottom:1em;">Fully-automatic segmentation won't ever be perfect</li>
+            <li style="padding-bottom:1em;">Incorporate a small number of user interactions
+            ("clicks") as additional guidance in the segmentation
+            process</li>
+            <li><strong>Our approach</strong>: start from an automatic
+            method, and use interaction to correct errors</li>
+            <!-- <li>Other interactive segmentation methods use: -->
+            <!--   <ul> -->
+            <!--     <li>Bounding boxes</li> -->
+            <!--     <li>Coarse outlining of the desired boundary</li> -->
+            <!--     <li>"Scribbling" foreground/background regions</li> -->
+            <!--   </ul> -->
+            <!-- </li> -->
           </ul>
 	</section>
 
-    <section>
-	  <h3>Our Approach</h3>
-      <ol>
-        <li>Start from an automatic segmentation</li>
-        <li>Allow user interaction to correct errors</li>
-      </ol>
-	</section>
+    <!-- <section> -->
+	<!--   <h3>Our Approach</h3> -->
+    <!--   <ol> -->
+    <!--     <li>Start from an automatic segmentation</li> -->
+    <!--     <li>Allow user interaction to correct errors</li> -->
+    <!--   </ol> -->
+	<!-- </section> -->
 
     <section>
 	  <h3>Automatic Segmentation Errors</h3>
-	  <img width="150px" src="fig/d1.png" alt="Segmentation Error" style="border:none; box-shadow:none;">
-	  <img  width="150px" src="fig/d3.png" alt="Segmentation Error" style="border:none; box-shadow:none;">
+	  <img width="200px" src="fig/d1.png" alt="Segmentation Error" style="border:none; box-shadow:none;">
+	  <img  width="200px" src="fig/d3.png" alt="Segmentation Error" style="border:none; box-shadow:none;">
 
       <br />
 
-	  <img width="150px" src="fig/f1.png" alt="Segmentation Error" style="border:none; box-shadow:none;">
-	  <img width="150px" src="fig/f3.png" alt="Segmentation Error" style="border:none; box-shadow:none;">
+	  <img width="200px" src="fig/f1.png" alt="Segmentation Error" style="border:none; box-shadow:none;">
+	  <img width="200px" src="fig/f3.png" alt="Segmentation Error" style="border:none; box-shadow:none;">
 	</section>
 
 	<section>
@@ -201,15 +205,10 @@
 	  </section>
 
 	  <!-- <section> -->
-	  <!--   <h3>Removal Algorithm</h3> -->
-	  <!--   <img src="fig/alg1.png" style="border:none;"> -->
+	  <!--   <h3>Removal: Live Demo</h3> -->
+      <!--   <img id="remu" height="250" src="http://127.0.0.1:8000/raw/?dataset=c3&slice=1" style="border:none;"> -->
+      <!--   <img id="remv" height="250" src="http://127.0.0.1:8000/raw/?dataset=c3&slice=3" style="border:none;"> -->
 	  <!-- </section> -->
-
-	  <section>
-	    <h3>Removal: Live Demo</h3>
-        <img id="remu" height="250" src="http://127.0.0.1:8000/raw/?dataset=c3&slice=1" style="border:none;">
-        <img id="remv" height="250" src="http://127.0.0.1:8000/raw/?dataset=c3&slice=3" style="border:none;">
-	  </section>
 
 	</section>
 
@@ -220,13 +219,10 @@
 	  </section>
 
 	  <section>
+	    <h3>Addition Input</h3>
 	    <img src="fig/bba.png" height="260" style="border:none; box-shadow:none;">
 	    <img src="fig/p-bbb.png" height="260" style="border:none; box-shadow:none;">
 	    <img src="fig/bbd.png" height="260" style="border:none; box-shadow:none;">
-	  </section>
-
-	  <section>
-	    <h3>Addition Input</h3>
 	    <p style="text-align: left;">Require three inputs:</p>
 	    <ul>
 	      <li><strong>Center</strong> point $c$ for new
@@ -250,7 +246,9 @@
                 \end{array}
               \right.
             \end{equation}
-            \begin{equation}
+            </p>
+            <br />
+            <p>\begin{equation}
               \Theta_p(\tilde{S}^V_i) = \left\{
                 \begin{array}{lcr}
                   \infty, & \| p - c \| \leq s \textrm{ and } i \neq n+1  \\
@@ -262,23 +260,19 @@
 
 	  <section>
 	    <h3>Parameter Estimation Visual Example</h3>
-        <img src="fig/p-cca.png" height="260" style="border:none; box-shadow:none;">
-	    <img src="fig/p-ccf.png" height="260" style="border:none; box-shadow:none;">
+        <img src="fig/p-cca.png" height="240" style="border:none; box-shadow:none;">
+	    <img src="fig/p-ccf.png" height="240" style="border:none; box-shadow:none;">
         <br />
-	    <img src="fig/p-ccg.png" height="260" style="border:none; box-shadow:none;">
-	    <img src="fig/p-ccb.png" height="260" style="border:none; box-shadow:none;">
+	    <img src="fig/p-ccg.png" height="240" style="border:none; box-shadow:none;">
+	    <img src="fig/p-ccb.png" height="240" style="border:none; box-shadow:none;">
+        <p>$d = 2\times s$</p>
 	  </section>
 
 	  <!-- <section> -->
-	  <!--   <h3>Addition Algorithm</h3> -->
-	  <!--   <img src="fig/alg2.png" style="border:none;"> -->
+	  <!--   <h3>Addition: Live Demo</h3> -->
+      <!--   <img id="addu" height="300" src="http://127.0.0.1:8000/raw/?dataset=c3&slice=1" style="border:none;"> -->
+      <!--   <img id="addv" height="300" src="http://127.0.0.1:8000/raw/?dataset=c3&slice=3" style="border:none;"> -->
 	  <!-- </section> -->
-
-	  <section>
-	    <h3>Addition: Live Demo</h3>
-        <img id="addu" height="300" src="http://127.0.0.1:8000/raw/?dataset=c3&slice=1" style="border:none;">
-        <img id="addv" height="300" src="http://127.0.0.1:8000/raw/?dataset=c3&slice=3" style="border:none;">
-	  </section>
 
 	</section>
 

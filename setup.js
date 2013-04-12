@@ -49,8 +49,8 @@ $(document).ready(function() {
     }); */
 
     // for demo
-    remu = new embed.Workspace($('#remu'),'c3-demo','0','none');
-    remv = new embed.Workspace($('#remv'),'c3-demo','1','removal',5,15);
-    addu = new embed.Workspace($('#addu'),'c2-demo','0','none');
-    addv = new embed.Workspace($('#addv'),'c2-demo','1','addition',5,15);
+    // remu = new embed.Workspace($('#remu'),'c3-demo','0','none');
+    // remv = new embed.Workspace($('#remv'),'c3-demo','1','removal',5,15);
+    // addu = new embed.Workspace($('#addu'),'c2-demo','0','none');
+    // addv = new embed.Workspace($('#addv'),'c2-demo','1','addition',5,15);
 });
