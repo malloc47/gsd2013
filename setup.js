@@ -5,6 +5,7 @@ Reveal.initialize({
     progress: true,
     history: true,
     center: true,
+    scale: false,
 
     theme: Reveal.getQueryHash().theme, // available themes are in /css/theme
     transition: Reveal.getQueryHash().transition || 'default', // default/cube/page/concave/zoom/linear/fade/none
@@ -49,8 +50,8 @@ $(document).ready(function() {
     }); */
 
     // for demo
-    remu = new embed.Workspace($('#remu'),'c3-demo','0','none');
+    // remu = new embed.Workspace($('#remu'),'c3-demo','0','none');
     remv = new embed.Workspace($('#remv'),'c3-demo','1','removal',5,15);
-    addu = new embed.Workspace($('#addu'),'c2-demo','0','none');
+    // addu = new embed.Workspace($('#addu'),'c2-demo','0','none');
     addv = new embed.Workspace($('#addv'),'c2-demo','1','addition',5,15);
 });

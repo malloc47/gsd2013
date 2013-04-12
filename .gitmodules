@@ -1,6 +1,6 @@
 [submodule "reveal"]
 	path = reveal
-	url = git://github.com/hakimel/reveal.js.git
+	url = git://github.com/malloc47/reveal.js.git
 [submodule "mathjax"]
 	path = mathjax
 	url = git://github.com/mathjax/MathJax.git
